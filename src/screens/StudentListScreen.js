@@ -9,7 +9,7 @@ export default function StudentListScreen({ route, navigation }) {
   // Define the fetchStudents function using useCallback
   const fetchStudents = useCallback(async () => {
     try {
-      const response = await fetch(`http://192.168.68.101:3000/api/rooms/${roomId}/students`);
+      const response = await fetch(`http://192.168.68.112:3000/api/rooms/${roomId}/students`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }

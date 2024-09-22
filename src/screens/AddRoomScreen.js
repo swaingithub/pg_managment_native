@@ -6,20 +6,21 @@ export default function AddRoomScreen({ route, navigation }) {
     console.log('floorId:', floorId); // Check if floorId is correctly received
 
     const [roomName, setRoomName] = useState('');
+    const [roomShare, setRoomShare] = useState(''); // New state for room share
 
     const handleAddRoom = async () => {
-        if (roomName.trim() === '') {
-            Alert.alert('Error', 'Please enter a room name');
+        if (roomName.trim() === '' || roomShare.trim() === '') {
+            Alert.alert('Error', 'Please enter both room name and room share');
             return;
         }
 
         try {
-            const response = await fetch(`http://192.168.68.101:3000/api/floors/${floorId}/rooms`, {
+            const response = await fetch(`http://192.168.68.112:3000/api/floors/${floorId}/rooms`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ room_name: roomName }),
+                body: JSON.stringify({ room_name: roomName, room_share: roomShare }), // Include room_share
             });
 
             if (!response.ok) {
@@ -43,6 +44,13 @@ export default function AddRoomScreen({ route, navigation }) {
                 placeholder="Enter room name"
                 value={roomName}
                 onChangeText={setRoomName}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Enter room share"
+                value={roomShare}
+                onChangeText={setRoomShare}
+                keyboardType="numeric" // Make it easier to enter numbers
             />
             <TouchableOpacity style={styles.addButton} onPress={handleAddRoom}>
                 <Text style={styles.addButtonText}>Add Room</Text>

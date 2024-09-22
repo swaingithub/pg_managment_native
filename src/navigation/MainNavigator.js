@@ -16,6 +16,7 @@ import UserDashBoard from '../screens/user/UserDashBoard';
 import StudentDataPage from '../screens/user/StudentDataPage';
 import NotificationScreen from '../screens/NotificationScreen';
 import StudentApprovalScreen from '../screens/StudentApprovalScreen';
+import FilterRoomListScreen from '../screens/FilteredRoom';
 
 const Stack = createStackNavigator();
 
@@ -51,10 +52,17 @@ export default function MainNavigator() {
       <Stack.Screen name="AddRoom" component={AddRoomScreen} />
       <Stack.Screen name="EditStudent" component={EditStudentScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
-      <Stack.Screen name="UserDashboard" component={UserDashBoard} />
-      <Stack.Screen name="StudentDataPage" component={StudentDataPage} />
+      <Stack.Screen
+        name="UserDashboard"
+        component={UserDashBoard}
+        options={{
+          headerShown: false, // Hide the header for UserDashboard
+        }}
+      />
+      <Stack.Screen name="StudentDataPage" component={StudentDataPage}  />
       <Stack.Screen name="NotificationScreen" component={NotificationScreen} options={{ title: 'Notifications' }} />
       <Stack.Screen name="StudentApproval" component={StudentApprovalScreen} options={{ title: 'StudentApprovalScreen' }} />
+      <Stack.Screen name="FilterRoomListScreen" component={FilterRoomListScreen} options={{ title: 'FilterRoomListScreen' }} />
     </Stack.Navigator>
   );
 }

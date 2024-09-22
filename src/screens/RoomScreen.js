@@ -11,7 +11,7 @@ export default function RoomScreen({ route, navigation }) {
 
     const fetchRooms = async () => {
         try {
-            const response = await fetch(`http://192.168.68.101:3000/api/floors/${floor}/rooms`);
+            const response = await fetch(`http://192.168.68.112:3000/api/floors/${floor}/rooms`);
             if (!response.ok) {
                 throw new Error('Failed to fetch rooms');
             }

@@ -9,7 +9,7 @@ export default function FloorScreen({ route, navigation }) {
     // Define the fetchRooms function using useCallback
     const fetchRooms = useCallback(async () => {
         try {
-            const response = await fetch(`http://192.168.68.101:3000/api/floors/${floorId}/rooms`);
+            const response = await fetch(`http://192.168.68.112:3000/api/floors/${floorId}/rooms`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }

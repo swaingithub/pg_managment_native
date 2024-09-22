@@ -1,52 +1,33 @@
 import axios from 'axios';
-import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Alert, Modal } from 'react-native';
 
 const StudentDetailScreen = ({ route, navigation }) => {
   const { student, roomId } = route.params;
-
-  // const handleClose = () => {
-  //   navigation.goBack();
-  // };
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState('');
 
   const handleEdit = () => {
-    // Navigate to the Edit screen with student details
     navigation.navigate('EditStudent', { student, roomId });
   };
 
   const handleDeleteStudent = async () => {
-    console.log(student.id);
-
     Alert.alert(
       "Confirm Delete",
       "Are you sure you want to delete this student?",
       [
-        {
-          text: "Cancel",
-          style: "cancel"
-        },
+        { text: "Cancel", style: "cancel" },
         {
           text: "Delete",
           onPress: async () => {
             try {
-              const response = await axios.delete(`http://192.168.68.101:3000/api/students/${student.id}`);
-
-              if (response.status !== 200) {
-                throw new Error(`Failed to delete student: ${response.statusText}`);
-              }
-
+              const response = await axios.delete(`http://192.168.68.112:3000/api/students/${student.id}`);
+              if (response.status !== 200) throw new Error(`Failed to delete student: ${response.statusText}`);
               Alert.alert('Success', 'Student deleted successfully');
               navigation.goBack();
             } catch (error) {
-              console.error('Error deleting student:', error.response || error.message || error);
-
-              if (error.response) {
-                Alert.alert('Error', `Failed to delete student: ${error.response.data || error.response.status}`);
-              } else if (error.request) {
-                Alert.alert('Error', 'No response from server. Please check the server or network.');
-              } else {
-                Alert.alert('Error', `Failed to delete student: ${error.message}`);
-              }
+              console.error('Error deleting student:', error);
+              Alert.alert('Error', `Failed to delete student: ${error.message}`);
             }
           }
         }
@@ -54,17 +35,10 @@ const StudentDetailScreen = ({ route, navigation }) => {
     );
   };
 
-
-  if (!student) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>Student details not available.</Text>
-        <TouchableOpacity style={styles.button} onPress={handleClose}>
-          <Text style={styles.buttonText}>Close</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+  const handleImagePress = (imageUri) => {
+    setSelectedImage(imageUri);
+    setModalVisible(true);
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -78,9 +52,6 @@ const StudentDetailScreen = ({ route, navigation }) => {
             <Text style={styles.buttonText}>Delete</Text>
           </TouchableOpacity>
         </View>
-        {/*<TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-          <Text style={styles.closeButtonText}>Close</Text>
-        </TouchableOpacity>*/}
       </View>
 
       <View style={styles.detailsContainer}>
@@ -108,18 +79,38 @@ const StudentDetailScreen = ({ route, navigation }) => {
 
       <View style={styles.imageContainer}>
         <Text style={styles.imageDescription}>Passport Photo:</Text>
-        <Image
-          source={{ uri: student.passport_photo }}
-          style={styles.photo}
-          resizeMode="cover"
-        />
+        <TouchableOpacity onPress={() => handleImagePress(student.passport_photo)}>
+          <Image
+            source={{ uri: student.passport_photo }}
+            style={styles.photo}
+            resizeMode="cover"
+          />
+        </TouchableOpacity>
+
         <Text style={styles.imageDescription}>Aadhaar Photo:</Text>
-        <Image
-          source={{ uri: student.aadhaar_photo }}
-          style={styles.photo}
-          resizeMode="cover"
-        />
+        <TouchableOpacity onPress={() => handleImagePress(student.aadhaar_photo)}>
+          <Image
+            source={{ uri: student.aadhaar_photo }}
+            style={styles.photo}
+            resizeMode="cover"
+          />
+        </TouchableOpacity>
       </View>
+
+      {/* Modal for displaying large image */}
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+            <Text style={styles.closeButtonText}>✖ Close</Text>
+          </TouchableOpacity>
+          <Image source={{ uri: selectedImage }} style={styles.fullImage} resizeMode="contain" />
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -152,15 +143,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: '600',
-  },
-  closeButton: {
-    padding: 10,
-    backgroundColor: '#007bff',
-    borderRadius: 8,
-  },
-  closeButtonText: {
     color: '#fff',
     fontWeight: '600',
   },
@@ -207,6 +189,29 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#333',
     marginBottom: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff', // Changed to white for visibility
+  },
+  fullImage: {
+    width: '100%',
+    height: '80%', // Adjusted height to avoid being too small
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    padding: 10,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
   },
   errorText: {
     fontSize: 18,

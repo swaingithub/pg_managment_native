@@ -12,7 +12,7 @@ export default function AddFloorScreen({ navigation }) {
         }
 
         try {
-            const response = await fetch('http://192.168.68.101:3000/api/floors', {
+            const response = await fetch('http://192.168.68.112:3000/api/floors', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

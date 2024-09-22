@@ -12,7 +12,7 @@ export default function HomeScreen({ navigation }) {
 
   const fetchFloors = async () => {
     try {
-      const response = await fetch('http://192.168.68.101:3000/api/floors');
+      const response = await fetch('http://192.168.68.112:3000/api/floors');
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -27,7 +27,7 @@ export default function HomeScreen({ navigation }) {
 
   const fetchNotifications = async () => {
     try {
-      const response = await axios.get('http://192.168.68.101:3000/api/notifications');
+      const response = await axios.get('http://192.168.68.112:3000/api/notifications');
       setNotifications(response.data);
       console.log('Fetched Notifications:', response.data);
     } catch (error) {

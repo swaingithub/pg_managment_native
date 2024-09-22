@@ -10,7 +10,7 @@ export default function LoginScreen() {
 
     const handleLogin = async () => {
         try {
-            const response = await fetch('http://192.168.68.101:3000/api/auth/login', {
+            const response = await fetch('http://192.168.68.112:3000/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -24,8 +24,9 @@ export default function LoginScreen() {
             if (response.ok) {
                 // Store user data in AsyncStorage
                 await AsyncStorage.setItem('currentUser', JSON.stringify({
-                    id: data.id,  // Make sure your API returns an id
-                    username: data.username,
+                    id: data.id,          // Ensure your API returns an id
+                    username: data.username, // The name or username to display
+                    email: data.email,    // Store the email returned from the API
                     role: data.role,
                 }));
                 console.log('User data stored in AsyncStorage');
@@ -46,7 +47,6 @@ export default function LoginScreen() {
             Alert.alert('Error', 'Something went wrong. Please try again.');
         }
     };
-
 
     return (
         <View style={styles.container}>

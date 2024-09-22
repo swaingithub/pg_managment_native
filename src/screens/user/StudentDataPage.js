@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView, Image, Picker } from 'react-native';
+import { View, Text, TextInput, Alert, ScrollView, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { Ionicons } from '@expo/vector-icons'; // For icons
 import axios from 'axios';
+import { Picker } from '@react-native-picker/picker';
 
 const StudentDataPage = () => {
     const [name, setName] = useState('');
@@ -11,7 +13,7 @@ const StudentDataPage = () => {
     const [work, setWork] = useState('');
     const [aadhaarPhoto, setAadhaarPhoto] = useState(null);
     const [passportPhoto, setPassportPhoto] = useState(null);
-    const [share, setShare] = useState('1'); // Default to '1 share'
+    const [share, setShare] = useState('1');
 
     useEffect(() => {
         (async () => {
@@ -23,14 +25,18 @@ const StudentDataPage = () => {
     }, []);
 
     const pickImage = async (setImage) => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            quality: 1,
-        });
+        try {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                quality: 1,
+            });
 
-        if (!result.canceled && result.assets && result.assets.length > 0) {
-            setImage(result.assets[0].uri);
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+                setImage(result.assets[0].uri);
+            }
+        } catch (error) {
+            console.error('Error picking image:', error);
         }
     };
 
@@ -59,7 +65,7 @@ const StudentDataPage = () => {
             });
             formData.append('share', share);
 
-            const response = await axios.post('http://192.168.68.101:3000/api/student/temporary', formData, {
+            const response = await axios.post('http://192.168.68.112:3000/api/student/temporary', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -74,7 +80,7 @@ const StudentDataPage = () => {
                 setWork('');
                 setAadhaarPhoto(null);
                 setPassportPhoto(null);
-                setShare('1'); // Reset share to default
+                setShare('1');
             } else {
                 Alert.alert('Error', 'Failed to send data');
             }
@@ -84,8 +90,10 @@ const StudentDataPage = () => {
     };
 
     return (
+        
         <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>Send Your Data to Admin</Text>
+        
+            <Text style={styles.title}>Student Information</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Name"
@@ -119,21 +127,34 @@ const StudentDataPage = () => {
                 onChangeText={setWork}
             />
 
-            {/* Aadhaar Photo Picker */}
-            <View style={styles.imageContainer}>
-                <Text style={styles.imageLabel}>Upload Aadhaar Photo:</Text>
-                <Button title="Select Aadhaar Photo" onPress={() => pickImage(setAadhaarPhoto)} />
-                {aadhaarPhoto && <Image source={{ uri: aadhaarPhoto }} style={styles.image} />}
+            <View style={styles.imageUploadContainer}>
+                <Text style={styles.imageLabel}>Aadhaar Photo:</Text>
+                <TouchableOpacity style={styles.imageUploadBox} onPress={() => pickImage(setAadhaarPhoto)}>
+                    {aadhaarPhoto ? (
+                        <Image source={{ uri: aadhaarPhoto }} style={styles.imagePreview} />
+                    ) : (
+                        <>
+                            <Ionicons name="cloud-upload-outline" size={36} color="#888" />
+                            <Text style={styles.imageUploadText}>Upload Aadhaar Photo</Text>
+                        </>
+                    )}
+                </TouchableOpacity>
             </View>
 
-            {/* Passport Photo Picker */}
-            <View style={styles.imageContainer}>
-                <Text style={styles.imageLabel}>Upload Passport Photo:</Text>
-                <Button title="Select Passport Photo" onPress={() => pickImage(setPassportPhoto)} />
-                {passportPhoto && <Image source={{ uri: passportPhoto }} style={styles.image} />}
+            <View style={styles.imageUploadContainer}>
+                <Text style={styles.imageLabel}>Passport Photo:</Text>
+                <TouchableOpacity style={styles.imageUploadBox} onPress={() => pickImage(setPassportPhoto)}>
+                    {passportPhoto ? (
+                        <Image source={{ uri: passportPhoto }} style={styles.imagePreview} />
+                    ) : (
+                        <>
+                            <Ionicons name="cloud-upload-outline" size={36} color="#888" />
+                            <Text style={styles.imageUploadText}>Upload Passport Photo</Text>
+                        </>
+                    )}
+                </TouchableOpacity>
             </View>
 
-            {/* Share Dropdown */}
             <View style={styles.dropdownContainer}>
                 <Text style={styles.dropdownLabel}>Share:</Text>
                 <Picker
@@ -148,7 +169,9 @@ const StudentDataPage = () => {
                 </Picker>
             </View>
 
-            <Button title="Submit" onPress={handleSubmit} />
+            <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+                <Text style={styles.submitButtonText}>Submit</Text>
+            </TouchableOpacity>
         </ScrollView>
     );
 };
@@ -156,49 +179,82 @@ const StudentDataPage = () => {
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
-        padding: 16,
-        backgroundColor: '#f8f9fa',
+        padding: 20,
+        backgroundColor: '#f4f7fb',
     },
     title: {
-        fontSize: 24,
-        fontWeight: 'bold',
+        fontSize: 26,
+        fontWeight: '600',
         marginBottom: 20,
         textAlign: 'center',
+        color: '#3a3d46',
     },
     input: {
         height: 50,
-        borderColor: '#ced4da',
+        borderColor: '#d0d3db',
         borderWidth: 1,
-        borderRadius: 8,
-        paddingHorizontal: 10,
+        borderRadius: 12,
+        paddingHorizontal: 15,
         marginBottom: 20,
+        backgroundColor: '#fff',
+        fontSize: 16,
     },
-    imageContainer: {
-        marginVertical: 20,
+    imageUploadContainer: {
+        marginBottom: 20,
         alignItems: 'center',
     },
     imageLabel: {
-        fontSize: 16,
+        fontSize: 18,
         marginBottom: 10,
+        color: '#3a3d46',
     },
-    image: {
-        width: 150,
+    imageUploadBox: {
+        width: '100%',
         height: 150,
-        borderRadius: 8,
-        marginVertical: 10,
-        resizeMode: 'cover',
+        borderRadius: 12,
+        borderWidth: 2,
+        borderColor: '#d0d3db',
+        borderStyle: 'dashed',
+        backgroundColor: '#eef0f5',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    imageUploadText: {
+        color: '#888',
+        marginTop: 10,
+        fontSize: 16,
+    },
+    imagePreview: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 12,
     },
     dropdownContainer: {
         marginVertical: 20,
-        alignItems: 'center',
     },
     dropdownLabel: {
-        fontSize: 16,
+        fontSize: 18,
         marginBottom: 10,
+        color: '#3a3d46',
     },
     dropdown: {
-        width: 150,
         height: 50,
+        borderColor: '#d0d3db',
+        borderWidth: 1,
+        borderRadius: 12,
+        backgroundColor: '#fff',
+    },
+    submitButton: {
+        backgroundColor: '#1e90ff',
+        padding: 15,
+        borderRadius: 12,
+        alignItems: 'center',
+        marginVertical: 20,
+    },
+    submitButtonText: {
+        fontSize: 18,
+        color: '#fff',
+        fontWeight: '600',
     },
 });
 

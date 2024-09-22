@@ -9,7 +9,7 @@ export default function StudentApprovalScreen({ route, navigation }) {
     useEffect(() => {
         const fetchStudentDetails = async () => {
             try {
-                const response = await axios.get(`http://192.168.68.101:3000/api/student/${studentId}`);
+                const response = await axios.get(`http://192.168.68.112:3000/api/student/${studentId}`);
                 setStudentDetails(response.data);
             } catch (error) {
                 console.error('Error fetching student details:', error);
@@ -22,9 +22,14 @@ export default function StudentApprovalScreen({ route, navigation }) {
 
     const handleApprove = async () => {
         try {
-            await axios.post(`http://192.168.68.101:3000/api/student/approve/${studentId}`);
+            await axios.post(`http://192.168.68.112:3000/api/student/approve/${studentId}`);
             Alert.alert('Success', 'Student approved successfully');
-            navigation.goBack();  // Go back to previous screen
+
+            // Navigate to RoomListScreen with studentId and share_room
+            navigation.navigate('FilterRoomListScreen', {
+                studentId,
+                share_room: studentDetails.share,  // Assuming 'share' is the room_share value
+            });
         } catch (error) {
             console.error('Error approving student:', error);
             Alert.alert('Error', 'Failed to approve student');
@@ -33,9 +38,9 @@ export default function StudentApprovalScreen({ route, navigation }) {
 
     const handleReject = async () => {
         try {
-            await axios.post(`http://192.168.68.101:3000/api/student/reject/${studentId}`);
+            await axios.post(`http://192.168.68.112:3000/api/student/reject/${studentId}`);
             Alert.alert('Success', 'Student rejected successfully');
-            navigation.goBack();  // Go back to previous screen
+            navigation.goBack();
         } catch (error) {
             console.error('Error rejecting student:', error);
             Alert.alert('Error', 'Failed to reject student');
@@ -54,20 +59,17 @@ export default function StudentApprovalScreen({ route, navigation }) {
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.header}>Student Approval</Text>
 
-            {/* Student Details */}
             <Text style={styles.label}>Name: {studentDetails.name}</Text>
             <Text style={styles.label}>Father's Name: {studentDetails.father_name}</Text>
             <Text style={styles.label}>Phone: {studentDetails.phone}</Text>
             <Text style={styles.label}>Email: {studentDetails.email}</Text>
             <Text style={styles.label}>Work: {studentDetails.work}</Text>
 
-            {/* Display Aadhaar and Passport Photos */}
             <Text style={styles.label}>Aadhaar Photo:</Text>
             <Image
                 source={{ uri: studentDetails.aadhaar_photo }}
                 style={styles.image}
                 resizeMode="contain"
-                onError={(e) => console.error('Image load error:', e.nativeEvent.error)}
             />
 
             <Text style={styles.label}>Passport Photo:</Text>
@@ -75,13 +77,10 @@ export default function StudentApprovalScreen({ route, navigation }) {
                 source={{ uri: studentDetails.passport_photo }}
                 style={styles.image}
                 resizeMode="contain"
-                onError={(e) => console.error('Image load error:', e.nativeEvent.error)}
             />
 
-            {/* Display Share Information */}
             <Text style={styles.label}>Share: {studentDetails.share}</Text>
 
-            {/* Approve and Reject Buttons */}
             <View style={styles.buttonContainer}>
                 <Button title="Approve" onPress={handleApprove} />
                 <Button title="Reject" onPress={handleReject} color="red" />
