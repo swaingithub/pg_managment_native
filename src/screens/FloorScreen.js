@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -6,29 +6,45 @@ export default function FloorScreen({ route, navigation }) {
     const { floorId, floorName } = route.params;
     const [rooms, setRooms] = useState([]);
 
-    // Define the fetchRooms function using useCallback
-    const fetchRooms = useCallback(async () => {
+    const fetchRoomsWithCounts = useCallback(async () => {
         try {
-            const response = await fetch(`http://192.168.68.112:3000/api/floors/${floorId}/rooms`);
-            if (!response.ok) {
+            // Fetch rooms for the specific floor
+            const roomsResponse = await fetch(`http://192.168.68.112:3000/api/floors/${floorId}/rooms`);
+            if (!roomsResponse.ok) {
                 throw new Error('Network response was not ok');
             }
-            const data = await response.json();
-            setRooms(data);
+            const roomsData = await roomsResponse.json();
+
+            // Fetch student counts for all rooms
+            const countResponse = await fetch(`http://192.168.68.112:3000/api/rooms/count`);
+            if (!countResponse.ok) {
+                throw new Error('Failed to fetch student counts');
+            }
+            const countData = await countResponse.json();
+
+            // Merge the room data with the student counts
+            const mergedData = roomsData.map(room => {
+                const roomCount = countData.find(count => count.room_id === room.id);
+                return {
+                    ...room,
+                    students_count: roomCount ? roomCount.student_count : 0, // Default to 0 if not found
+                };
+            });
+
+            setRooms(mergedData);
         } catch (error) {
-            console.error('Error fetching rooms:', error);
+            console.error('Error fetching rooms with counts:', error);
         }
     }, [floorId]);
 
-    // Use useFocusEffect to call fetchRooms when the screen is focused
     useFocusEffect(
         useCallback(() => {
-            fetchRooms();
-        }, [fetchRooms])
+            fetchRoomsWithCounts();
+        }, [fetchRoomsWithCounts])
     );
 
     const handleAddRoomPress = () => {
-        navigation.navigate('AddRoom', { floorId }); // Pass floorId to AddRoomScreen
+        navigation.navigate('AddRoom', { floorId });
     };
 
     return (
@@ -77,6 +93,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#e9ecef',
         borderRadius: 8,
         marginBottom: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 1.5,
+        elevation: 3,
     },
     itemText: {
         fontSize: 18,
