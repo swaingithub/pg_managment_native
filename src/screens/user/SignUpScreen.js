@@ -14,8 +14,6 @@ export default function LoginScreen() {
         console.log(email);
         console.log(password);
 
-
-
         try {
             // Making a POST request to the backend API
             const response = await axios.post('http://192.168.68.112:3000/api/auth/signup', {
