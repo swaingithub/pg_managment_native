@@ -26,7 +26,7 @@ export default function MainNavigator() {
       <Stack.Screen
         name="Login"
         component={LoginScreen}
-        options={{ title: null }}
+        options={{ title: null, headerShown: false }}
       />
       <Stack.Screen
         name="Home"
@@ -51,7 +51,9 @@ export default function MainNavigator() {
       <Stack.Screen name="AddFloor" component={AddFloorScreen} />
       <Stack.Screen name="AddRoom" component={AddRoomScreen} />
       <Stack.Screen name="EditStudent" component={EditStudentScreen} />
-      <Stack.Screen name="SignUp" component={SignUpScreen} />
+      <Stack.Screen name="SignUp" component={SignUpScreen}
+        options={{ title: null, headerShown: false }}
+      />
       <Stack.Screen
         name="UserDashboard"
         component={UserDashBoard}

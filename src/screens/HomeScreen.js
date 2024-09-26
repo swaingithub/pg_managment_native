@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
@@ -8,20 +8,38 @@ export default function HomeScreen({ navigation }) {
   const [floors, setFloors] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortedFloors, setSortedFloors] = useState([]);
-  const [notifications, setNotifications] = useState([]); // State to hold notifications
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true); // New loading state
 
   const fetchFloors = async () => {
+    setLoading(true); // Start loading
     try {
       const response = await fetch('http://192.168.68.112:3000/api/floors');
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
+      if (!response.ok) throw new Error('Network response was not ok');
       const data = await response.json();
       setFloors(data);
       setSortedFloors(data);
+
+      // Fetch student counts for all floors
+      const countResponse = await fetch('http://192.168.68.112:3000/api/count-students-by-room-floor');
+      if (!countResponse.ok) throw new Error('Failed to fetch student counts');
+      const countData = await countResponse.json();
+
+      // Merge the floor data with the student counts
+      const mergedData = data.map(floor => {
+        const floorCount = countData.data.find(count => count.floor_id === floor.id);
+        return {
+          ...floor,
+          students_count: floorCount ? floorCount.total_student_count : 0, // Use the updated field name
+        };
+      });
+
+      setSortedFloors(mergedData);
     } catch (error) {
-      console.error('Error fetching floors:', error);
-      Alert.alert('Error', 'Failed to load floors');
+      console.error('Error fetching floors and counts:', error);
+      Alert.alert('Error', 'Failed to load floors and student counts');
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -29,7 +47,6 @@ export default function HomeScreen({ navigation }) {
     try {
       const response = await axios.get('http://192.168.68.112:3000/api/notifications');
       setNotifications(response.data);
-      console.log('Fetched Notifications:', response.data);
     } catch (error) {
       console.error('Error fetching notifications:', error);
       Alert.alert('Error', 'Failed to load notifications');
@@ -39,7 +56,7 @@ export default function HomeScreen({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       fetchFloors();
-      fetchNotifications(); // Fetch notifications when screen is focused
+      fetchNotifications();
     }, [])
   );
 
@@ -94,27 +111,33 @@ export default function HomeScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {sortedFloors.length === 0 ? (
-        <Text style={styles.noFloorsText}>No floors available.</Text>
+      {loading ? ( // Show loading indicator
+        <ActivityIndicator size="large" color="#007bff" style={styles.loading} />
       ) : (
-        <FlatList
-          data={sortedFloors}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() => navigation.navigate('Floor', { floorId: item.id, floorName: item.floor_name })}
-            >
-              <View style={styles.cardContent}>
-                <FontAwesome name="building" size={24} color="#007bff" />
-                <View style={styles.textContainer}>
-                  <Text style={styles.floorText}>{item.floor_name}</Text>
-                  <Text style={styles.studentCount}>{`Students: ${item.students_count}`}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
+        <>
+          {sortedFloors.length === 0 ? (
+            <Text style={styles.noFloorsText}>No floors available.</Text>
+          ) : (
+            <FlatList
+              data={sortedFloors}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.card}
+                  onPress={() => navigation.navigate('Floor', { floorId: item.id, floorName: item.floor_name })}
+                >
+                  <View style={styles.cardContent}>
+                    <FontAwesome name="building" size={24} color="#007bff" />
+                    <View style={styles.textContainer}>
+                      <Text style={styles.floorText}>{item.floor_name}</Text>
+                      <Text style={styles.studentCount}>{`Students: ${item.students_count}`}</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              )}
+            />
           )}
-        />
+        </>
       )}
     </View>
   );
@@ -224,6 +247,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#6c757d',
     textAlign: 'center',
+    marginVertical: 20,
+  },
+  loading: {
     marginVertical: 20,
   },
 });
