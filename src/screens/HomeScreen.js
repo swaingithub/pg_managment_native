@@ -14,14 +14,14 @@ export default function HomeScreen({ navigation }) {
   const fetchFloors = async () => {
     setLoading(true); // Start loading
     try {
-      const response = await fetch('http://192.168.68.112:3000/api/floors');
+      const response = await fetch('https://pg-management-ykhm.onrender.com/api/floors');
       if (!response.ok) throw new Error('Network response was not ok');
       const data = await response.json();
       setFloors(data);
       setSortedFloors(data);
 
       // Fetch student counts for all floors
-      const countResponse = await fetch('http://192.168.68.112:3000/api/count-students-by-room-floor');
+      const countResponse = await fetch('https://pg-management-ykhm.onrender.com/api/count-students-by-room-floor');
       if (!countResponse.ok) throw new Error('Failed to fetch student counts');
       const countData = await countResponse.json();
 
@@ -45,7 +45,7 @@ export default function HomeScreen({ navigation }) {
 
   const fetchNotifications = async () => {
     try {
-      const response = await axios.get('http://192.168.68.112:3000/api/notifications');
+      const response = await axios.get('https://pg-management-ykhm.onrender.com/api/notifications');
       setNotifications(response.data);
     } catch (error) {
       console.error('Error fetching notifications:', error);

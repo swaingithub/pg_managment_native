@@ -65,7 +65,7 @@ const StudentDataPage = () => {
             });
             formData.append('share', share);
 
-            const response = await axios.post('http://192.168.68.112:3000/api/student/temporary', formData, {
+            const response = await axios.post('https://pg-management-ykhm.onrender.com/api/student/temporary', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

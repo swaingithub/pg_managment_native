@@ -14,7 +14,7 @@ export default function LoginScreen() {
     const handleLogin = async () => {
         setErrorMessage(''); // Reset error message
         try {
-            const response = await fetch('http://192.168.68.112:3000/api/auth/login', {
+            const response = await fetch('https://pg-management-ykhm.onrender.com/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

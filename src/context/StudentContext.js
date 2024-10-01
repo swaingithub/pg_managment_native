@@ -7,7 +7,7 @@ export function StudentProvider({ children }) {
 
   const fetchStudents = useCallback(async (floor, room) => {
     try {
-      const response = await fetch(`http://192.168.68.112:3000/api/floors/${floor}/rooms/${room}/students`);
+      const response = await fetch(`https://pg-management-ykhm.onrender.com/api/floors/${floor}/rooms/${room}/students`);
       if (!response.ok) {
         throw new Error('Failed to fetch students');
       }

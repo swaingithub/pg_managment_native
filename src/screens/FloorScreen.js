@@ -9,14 +9,14 @@ export default function FloorScreen({ route, navigation }) {
     const fetchRoomsWithCounts = useCallback(async () => {
         try {
             // Fetch rooms for the specific floor
-            const roomsResponse = await fetch(`http://192.168.68.112:3000/api/floors/${floorId}/rooms`);
+            const roomsResponse = await fetch(`https://pg-management-ykhm.onrender.com/api/floors/${floorId}/rooms`);
             if (!roomsResponse.ok) {
                 throw new Error('Network response was not ok');
             }
             const roomsData = await roomsResponse.json();
 
             // Fetch student counts for all rooms
-            const countResponse = await fetch(`http://192.168.68.112:3000/api/rooms/count`);
+            const countResponse = await fetch(`https://pg-management-ykhm.onrender.com/api/rooms/count`);
             if (!countResponse.ok) {
                 throw new Error('Failed to fetch student counts');
             }

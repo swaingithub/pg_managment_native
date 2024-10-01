@@ -9,7 +9,7 @@ export default function FilterRoomListScreen({ route, navigation }) {
     useEffect(() => {
         const fetchRooms = async () => {
             try {
-                const response = await axios.get(`http://192.168.68.112:3000/api/floors/rooms/share?room_share=${share_room}`);
+                const response = await axios.get(`https://pg-management-ykhm.onrender.com/api/floors/rooms/share?room_share=${share_room}`);
                 setRooms(response.data);
             } catch (error) {
                 console.error('Error fetching rooms:', error);
@@ -23,7 +23,7 @@ export default function FilterRoomListScreen({ route, navigation }) {
     const handleRoomPress = async (roomId) => {
         try {
             // Call the endpoint to approve the student and save data
-            const response = await axios.post(`http://192.168.68.112:3000/api/students/approve-and-save/${studentId}`, {
+            const response = await axios.post(`https://pg-management-ykhm.onrender.com/api/students/approve-and-save/${studentId}`, {
                 roomId, // Pass the roomId along with any other required data
             });
 

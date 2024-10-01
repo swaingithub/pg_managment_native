@@ -15,7 +15,7 @@ export default function AddRoomScreen({ route, navigation }) {
         }
 
         try {
-            const response = await fetch(`http://192.168.68.112:3000/api/floors/${floorId}/rooms`, {
+            const response = await fetch(`https://pg-management-ykhm.onrender.com/api/floors/${floorId}/rooms`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

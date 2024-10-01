@@ -9,7 +9,7 @@ export default function StudentApprovalScreen({ route, navigation }) {
     useEffect(() => {
         const fetchStudentDetails = async () => {
             try {
-                const response = await axios.get(`http://192.168.68.112:3000/api/student/${studentId}`);
+                const response = await axios.get(`https://pg-management-ykhm.onrender.com/api/student/${studentId}`);
                 setStudentDetails(response.data);
             } catch (error) {
                 console.error('Error fetching student details:', error);
@@ -22,7 +22,7 @@ export default function StudentApprovalScreen({ route, navigation }) {
 
     const handleApprove = async () => {
         try {
-            await axios.post(`http://192.168.68.112:3000/api/student/approve/${studentId}`);
+            await axios.post(`https://pg-management-ykhm.onrender.com/api/student/approve/${studentId}`);
             Alert.alert('Success', 'Student approved successfully');
 
             // Navigate to RoomListScreen with studentId and share_room
@@ -38,7 +38,7 @@ export default function StudentApprovalScreen({ route, navigation }) {
 
     const handleReject = async () => {
         try {
-            await axios.post(`http://192.168.68.112:3000/api/student/reject/${studentId}`);
+            await axios.post(`https://pg-management-ykhm.onrender.com/api/student/reject/${studentId}`);
             Alert.alert('Success', 'Student rejected successfully');
             navigation.goBack();
         } catch (error) {

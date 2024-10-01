@@ -21,7 +21,7 @@ const StudentDetailScreen = ({ route, navigation }) => {
           text: "Delete",
           onPress: async () => {
             try {
-              const response = await axios.delete(`http://192.168.68.112:3000/api/students/${student.id}`);
+              const response = await axios.delete(`https://pg-management-ykhm.onrender.com/api/students/${student.id}`);
               if (response.status !== 200) throw new Error(`Failed to delete student: ${response.statusText}`);
               Alert.alert('Success', 'Student deleted successfully');
               navigation.goBack();

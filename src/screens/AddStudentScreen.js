@@ -58,7 +58,7 @@ export default function AddStudentScreen({ route, navigation }) {
         name: 'passport_photo.jpg',
       });
 
-      const response = await fetch('http://192.168.68.112:3000/api/students', {
+      const response = await fetch('https://pg-management-ykhm.onrender.com/api/students', {
         method: 'POST',
         body: formData,
         headers: {

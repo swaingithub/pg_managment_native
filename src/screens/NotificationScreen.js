@@ -8,7 +8,7 @@ export default function NotificationScreen({ navigation }) {
     useEffect(() => {
         const fetchNotifications = async () => {
             try {
-                const response = await axios.get('http://192.168.68.112:3000/api/notifications');
+                const response = await axios.get('https://pg-management-ykhm.onrender.com/api/notifications');
                 setNotifications(response.data);
             } catch (error) {
                 console.error('Error fetching notifications:', error);

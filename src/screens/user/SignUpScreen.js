@@ -15,7 +15,7 @@ export default function SignUpScreen() {
     const handleSignUp = async () => {
         setErrorMessage(''); // Reset error message
         try {
-            const response = await axios.post('http://192.168.68.112:3000/api/auth/signup', {
+            const response = await axios.post('https://pg-management-ykhm.onrender.com/api/auth/signup', {
                 username,
                 email,
                 password,

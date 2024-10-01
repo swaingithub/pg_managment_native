@@ -78,7 +78,7 @@ export default function EditStudentScreen({ route, navigation }) {
             }
 
             // Sending the request with form data
-            const response = await axios.post(`http://192.168.68.112:3000/api/students/${student.id}`, formData, {
+            const response = await axios.post(`https://pg-management-ykhm.onrender.com/api/students/${student.id}`, formData, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'multipart/form-data',
